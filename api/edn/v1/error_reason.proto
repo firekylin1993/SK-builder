@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package edn.v1;
-
-option go_package = "SK-builder/api/edn/v1;v1";
-
-enum ErrorReason {
-  CHANNEL_NOT_FOUND = 0;
-}
