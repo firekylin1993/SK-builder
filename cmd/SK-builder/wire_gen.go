@@ -10,8 +10,10 @@ import (
 	"SK-builder/internal/biz"
 	"SK-builder/internal/conf"
 	"SK-builder/internal/data"
+	"SK-builder/internal/infrastructure/otel/trace"
 	"SK-builder/internal/server"
 	"SK-builder/internal/service"
+	"context"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -36,4 +38,14 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	return app, func() {
 		cleanup()
 	}, nil
+}
+
+func wireProvider(contextContext context.Context, confServer *conf.Server, logger log.Logger) (func(), error) {
+	client := trace.NewTracerClient(confServer)
+	exporter := trace.NewTracerExporter(contextContext, client)
+	v, err := NewProvider(contextContext, confServer, exporter)
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
 }

@@ -5,6 +5,10 @@ server:
   grpc:
     addr: 0.0.0.0:9000
     timeout: 1s
+  otel:
+    addr: ingress-huashan.avlyun.org:30164
+    fraction: 1.0
+  app_name: "SK-demo"  
 data:
   database:
     driver: mysql

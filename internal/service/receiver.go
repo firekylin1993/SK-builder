@@ -5,6 +5,8 @@ import (
 
 	pb "SK-builder/api/edn/v1"
 	"SK-builder/internal/biz"
+
+	"go.opentelemetry.io/otel"
 )
 
 type ReceiverService struct {
@@ -18,7 +20,10 @@ func NewReceiverService(uc *biz.ReceiverUsecase) *ReceiverService {
 }
 
 func (s *ReceiverService) Recrive(ctx context.Context, req *pb.ReceiveRequest) (*pb.ReceiveReply, error) {
-	s2, err := s.uc.GetPubKey(ctx, req.Channel)
+	c, span := otel.Tracer("ReceiverService").Start(ctx, "Recrive")
+	defer span.End()
+
+	s2, err := s.uc.GetPubKey(c, req.Channel)
 	if err != nil {
 		return nil, err
 	}

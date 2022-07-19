@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
 
 	"SK-builder/internal/conf"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -71,6 +73,11 @@ func main() {
 		panic(err)
 	}
 
+	providerCleanup, err := wireProvider(context.Background(), bc.Server, logger)
+	if err != nil {
+		panic(err)
+	}
+	defer providerCleanup()
 	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
 	if err != nil {
 		panic(err)

@@ -21,8 +21,14 @@ message Server {
     string addr = 2;
     google.protobuf.Duration timeout = 3;
   }
+  message OTEL {
+    string addr = 1;
+    float fraction = 2;
+  }
   HTTP http = 1;
   GRPC grpc = 2;
+  OTEL otel = 3;
+  string app_name = 4;
 }
 
 message Data {
