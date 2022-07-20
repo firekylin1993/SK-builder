@@ -7,13 +7,18 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/propagation"
+	controller "go.opentelemetry.io/otel/sdk/metric/controller/basic"
+	"go.opentelemetry.io/otel/sdk/metric/export"
+	processor "go.opentelemetry.io/otel/sdk/metric/processor/basic"
+	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 )
 
-func NewProvider(ctx context.Context, c *conf.Server, traceExp *otlptrace.Exporter) (func(), error) {
+func NewProvider(ctx context.Context, c *conf.Server, metricExp export.Exporter, traceExp *otlptrace.Exporter) (func(), error) {
 	res, err := resource.New(ctx,
 		resource.WithProcess(),
 		resource.WithTelemetrySDK(),
@@ -25,6 +30,16 @@ func NewProvider(ctx context.Context, c *conf.Server, traceExp *otlptrace.Export
 	if err != nil {
 		return nil, err
 	}
+
+	pusher := controller.New(
+		processor.NewFactory(
+			simple.NewWithHistogramDistribution(),
+			metricExp,
+		),
+		controller.WithExporter(metricExp),
+		controller.WithCollectPeriod(3*time.Second),
+	)
+	global.SetMeterProvider(pusher)
 
 	bsp := sdktrace.NewBatchSpanProcessor(traceExp)
 	tracerProvider := sdktrace.NewTracerProvider(
@@ -42,6 +57,11 @@ func NewProvider(ctx context.Context, c *conf.Server, traceExp *otlptrace.Export
 			otel.Handle(err)
 		}
 		if err := traceExp.Shutdown(cxt); err != nil {
+			otel.Handle(err)
+		}
+
+		// pushes any last exports to the receiver
+		if err := pusher.Stop(cxt); err != nil {
 			otel.Handle(err)
 		}
 	}, nil

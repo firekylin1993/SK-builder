@@ -1,4 +1,4 @@
-package trace
+package myotel
 
 import (
 	"SK-builder/internal/conf"

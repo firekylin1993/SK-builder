@@ -10,7 +10,7 @@ import (
 	"SK-builder/internal/biz"
 	"SK-builder/internal/conf"
 	"SK-builder/internal/data"
-	"SK-builder/internal/infrastructure/otel/trace"
+	"SK-builder/internal/infrastructure/myotel"
 	"SK-builder/internal/server"
 	"SK-builder/internal/service"
 	"context"
@@ -41,9 +41,11 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 }
 
 func wireProvider(contextContext context.Context, confServer *conf.Server, logger log.Logger) (func(), error) {
-	client := trace.NewTracerClient(confServer)
-	exporter := trace.NewTracerExporter(contextContext, client)
-	v, err := NewProvider(contextContext, confServer, exporter)
+	client := myotel.NewMetricClient(confServer)
+	exporter := myotel.NewMetricExporter(contextContext, client)
+	otlptraceClient := myotel.NewTracerClient(confServer)
+	otlptraceExporter := myotel.NewTracerExporter(contextContext, otlptraceClient)
+	v, err := NewProvider(contextContext, confServer, exporter, otlptraceExporter)
 	if err != nil {
 		return nil, err
 	}
