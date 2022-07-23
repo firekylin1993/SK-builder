@@ -8,11 +8,14 @@ server:
   otel:
     addr: ingress-huashan.avlyun.org:30164
     fraction: 1.0
-  app_name: "SK-demo"  
+  app_name: "SK-demo"
+  rsa_bucket:
+    limit: 20
+    path: "/Users/yuguo/go-project/src/SK-builder-demo/temp/rsa"
+    key_size: 2048
 data:
-  database:
-    driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test
+  mysql:
+    dsn: root:antiy@2018@10.251.21.20:31963/test
   redis:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s

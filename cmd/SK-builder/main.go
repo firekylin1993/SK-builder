@@ -73,12 +73,16 @@ func main() {
 		panic(err)
 	}
 
+	// err := wireBucket(context.Background(), bc.Server, logger)
+	// if err != nil {
+	// 	panic(err)
+	// }
 	providerCleanup, err := wireProvider(context.Background(), bc.Server, logger)
 	if err != nil {
 		panic(err)
 	}
 	defer providerCleanup()
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	app, cleanup, err := wireApp(context.Background(), bc.Server, bc.Data, logger)
 	if err != nil {
 		panic(err)
 	}

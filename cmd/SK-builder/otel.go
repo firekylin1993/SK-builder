@@ -18,7 +18,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 )
 
-func NewProvider(ctx context.Context, c *conf.Server, metricExp export.Exporter, traceExp *otlptrace.Exporter) (func(), error) {
+func newProvider(ctx context.Context, c *conf.Server, metricExp export.Exporter, traceExp *otlptrace.Exporter) (func(), error) {
 	res, err := resource.New(ctx,
 		resource.WithProcess(),
 		resource.WithTelemetrySDK(),

@@ -10,6 +10,7 @@ import (
 	"SK-builder/internal/biz"
 	"SK-builder/internal/conf"
 	"SK-builder/internal/data"
+	"SK-builder/internal/infrastructure/mykey"
 	"SK-builder/internal/infrastructure/myotel"
 	"SK-builder/internal/server"
 	"SK-builder/internal/service"
@@ -21,17 +22,29 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewData(confData, logger)
+func wireApp(contextContext context.Context, confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+	dataData, cleanup, err := data.NewDB(confData, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	greeterRepo := data.NewGreeterRepo(dataData, logger)
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
 	greeterService := service.NewGreeterService(greeterUsecase)
+	
 	receiverRepo := data.NewReceiverRepo(dataData, logger)
 	receiverUsecase := biz.NewReceiverUsecase(receiverRepo, logger)
 	receiverService := service.NewReceiverService(receiverUsecase)
+
+	rsaBucketRepe := data.NewBucketRepo(dataData, logger)
+	privateKey := mykey.NewProviderKey()
+	publicKey := mykey.NewPublicKey()
+	rsaKey := mykey.NewRsaKey(privateKey, publicKey, confServer)
+	snowNode := mykey.NewSnowNode(confServer)
+	rsaBucket := mykey.NewRsaBucket(confServer, rsaKey, snowNode, rsaBucketRepe)
+	err2 := newBucket(contextContext, rsaBucket, logger)
+	if err2 != nil { 
+		return nil, nil, err2
+	}
 	grpcServer := server.NewGRPCServer(confServer, greeterService, receiverService, logger)
 	httpServer := server.NewHTTPServer(confServer, greeterService, receiverService, logger)
 	app := newApp(logger, grpcServer, httpServer)
@@ -45,9 +58,20 @@ func wireProvider(contextContext context.Context, confServer *conf.Server, logge
 	exporter := myotel.NewMetricExporter(contextContext, client)
 	otlptraceClient := myotel.NewTracerClient(confServer)
 	otlptraceExporter := myotel.NewTracerExporter(contextContext, otlptraceClient)
-	v, err := NewProvider(contextContext, confServer, exporter, otlptraceExporter)
+	v, err := newProvider(contextContext, confServer, exporter, otlptraceExporter)
 	if err != nil {
 		return nil, err
 	}
 	return v, nil
 }
+
+// func wireBucket(contextContext context.Context, confData *conf.Data, confServer *conf.Server, logger log.Logger) error {
+// 	bucket := mykey.NewBucket(confServer)
+// 	privateKey := mykey.NewProviderKey()
+// 	publicKey := mykey.NewPublicKey()
+// 	rsaKey := mykey.NewRsaKey(privateKey, publicKey, confServer)
+// 	node := mykey.NewSnowNode(confServer)
+// 	v := mykey.NewSnowflakeID(node)
+// 	error2 := NewBucket(contextContext, bucket, rsaKey, v)
+// 	return error2
+// }
