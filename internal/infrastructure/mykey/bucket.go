@@ -36,25 +36,25 @@ func (b *RsaBucket) Generate(ctx context.Context) (*rsa.PrivateKey, error) {
 	return b.RsaKey.GenerateKey() //生成私钥对象
 }
 
-func (b *RsaBucket) Fill(ctx context.Context, pk *rsa.PrivateKey) (string, error) {
+func (b *RsaBucket) Fill(ctx context.Context, pk *rsa.PrivateKey) (string, int64, error) {
 	snowIDBtye, snowIDInt64 := b.SnowNode.GetID() //获取雪花算法的ID
 	//组装桶密钥路径
 	path := path.Join(b.Path, strconv.Itoa(int(snowIDInt64)))
 	if os.IsNotExist(os.MkdirAll(path, 0755)) {
-		return "", errors.New("mkdir error")
+		return "", 0, errors.New("mkdir error")
 	}
 
 	err := b.RsaKey.GetKey(pk, path) // 生成私钥文件
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	err = b.RsaKey.GetPublicKey(pk, snowIDBtye, path) // 生成公钥文件
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
-	return path, nil
+	return path, snowIDInt64, nil
 }
 
 func (b *RsaBucket) Remove(ctx context.Context, path string) error {

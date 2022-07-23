@@ -33,7 +33,7 @@ func NewProviderKey() *PrivateKey {
 	return &PrivateKey{}
 }
 
-func NewRsaKey(k *PrivateKey, pk *PublicKey, c *conf.Server) *RsaKey {
+func NewRsaKey(c *conf.Server, k *PrivateKey, pk *PublicKey) *RsaKey {
 	return &RsaKey{
 		Key:        k,
 		PubKey:     pk,

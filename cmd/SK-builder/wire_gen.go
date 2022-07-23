@@ -38,7 +38,7 @@ func wireApp(contextContext context.Context, confServer *conf.Server, confData *
 	rsaBucketRepe := data.NewBucketRepo(dataData, logger)
 	privateKey := mykey.NewProviderKey()
 	publicKey := mykey.NewPublicKey()
-	rsaKey := mykey.NewRsaKey(privateKey, publicKey, confServer)
+	rsaKey := mykey.NewRsaKey(confServer, privateKey, publicKey)
 	snowNode := mykey.NewSnowNode(confServer)
 	rsaBucket := mykey.NewRsaBucket(confServer, rsaKey, snowNode, rsaBucketRepe)
 	err2 := newBucket(contextContext, rsaBucket, logger)
