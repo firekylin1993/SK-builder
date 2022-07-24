@@ -52,7 +52,7 @@ func wireProvider(contextContext context.Context, confServer *conf.Server, logge
 }
 
 func wireBucket(contextContext context.Context, confData *conf.Data, confServer *conf.Server, logger log.Logger) (*db.Data,func(),error) {
-	dataData, cleanup, err := db.NewDB(confData, logger)
+	dataData, cleanup, err := db.NewMysql(confData, logger)
 	if err != nil {
 		return nil, nil, err
 	}

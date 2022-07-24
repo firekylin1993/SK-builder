@@ -19,8 +19,19 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 		return err
 	}
 
+	i, err := b.BucketDb.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	var diff int32 = 0
+	diff = b.Limit - i
+	if diff <= 0 {
+		return nil
+	}
+
 	c := make(chan struct{}, b.Limit)
-	for i := 0; i < int(b.Limit); i++ {
+	for i := 0; i < int(diff); i++ {
 		c <- struct{}{}
 	}
 	var keys int32
@@ -54,7 +65,7 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 	}
 	wg.Wait()
 	close(c)
-	if keys != b.Limit {
+	if (keys+diff) != b.Limit {
 		log.NewHelper(logger).Errorf("当前密钥桶密钥对数%d\n", keys)
 		return errors.New("密钥桶数量不一致")
 	}

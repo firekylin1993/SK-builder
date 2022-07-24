@@ -9,7 +9,7 @@ import (
 )
 
 var ProviderSet = wire.NewSet(
-	db.NewDB,
+	db.NewMysql,
 
 	myotel.NewTracerClient,
 	myotel.NewTracerExporter,

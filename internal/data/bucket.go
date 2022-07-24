@@ -28,8 +28,9 @@ func (b *RsaBucketRepo) Add(ctx context.Context, snowId int64) error {
 	return nil
 }
 
-func (b *RsaBucketRepo) Get(ctx context.Context, snowId int64) error {
-	return nil
+func (b *RsaBucketRepo) GetAll(ctx context.Context) (int32, error) {
+	// TODO 获取密钥桶所有数据
+	return 0, nil
 }
 
 func (b *RsaBucketRepo) Delete(ctx context.Context, snowId int64) error {

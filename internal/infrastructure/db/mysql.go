@@ -4,6 +4,8 @@ import (
 	"SK-builder/internal/conf"
 	"database/sql"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/go-kratos/kratos/v2/log"
 )
 
@@ -20,7 +22,7 @@ type Data struct {
 // 	return &Data{}, cleanup, nil
 // }
 
-func NewDB(data *conf.Data, logger log.Logger) (*Data, func(), error) {
+func NewMysql(data *conf.Data, logger log.Logger) (*Data, func(), error) {
 	// db, _ := sql.Open("mysql", data.Mysql.Dsn)
 	// //设置数据库最大连接数
 	// db.SetConnMaxLifetime(100)
