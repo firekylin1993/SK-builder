@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+
+	"github.com/go-playground/assert/v2"
 )
 
 func TestSnowflake(t *testing.T) {
@@ -13,18 +15,16 @@ func TestSnowflake(t *testing.T) {
 
 	var m sync.Map
 	sn := NewSnowNode(s)
-
 	num := 0
-
-	c := make(chan struct{}, 100000)
-	for i := 0; i < int(100000); i++ {
+	c := make(chan struct{}, 10000)
+	d := make([]int64, 0, 1)
+	for i := 0; i < 10000; i++ {
 		c <- struct{}{}
 	}
 	wg := sync.WaitGroup{}
-
 	for i := 1; i <= 10; i++ {
 		wg.Add(1)
-		go func() {
+		go func(n int) {
 		Loop:
 			for {
 				select {
@@ -32,20 +32,20 @@ func TestSnowflake(t *testing.T) {
 					_, id := sn.GetID()
 					if _, ok := m.Load(id); ok {
 						fmt.Printf("t: %d\n", id)
-						t.Error("id is repeat")
+						d = append(d, id)
 					}
-
 					fmt.Printf("id: %d\n", id)
 					m.Store(id, 1)
 					num++
 				default:
-					wg.Done()
 					break Loop
 				}
 			}
-		}()
+			wg.Done()
+		}(i)
 	}
 	wg.Wait()
 	close(c)
-	fmt.Println(num)
+	fmt.Printf("d: %v\n", d)
+	assert.Equal(t, num, 10000)
 }

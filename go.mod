@@ -7,7 +7,7 @@ require (
 	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20220720051110-de0e4e222832
 	github.com/go-kratos/kratos/v2 v2.4.0
 	github.com/go-kratos/swagger-api v1.0.1
-	github.com/go-sql-driver/mysql v1.6.0
+	github.com/go-playground/assert/v2 v2.0.1
 	github.com/google/wire v0.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.2
