@@ -10,11 +10,13 @@ import (
 	"SK-builder/internal/biz"
 	"SK-builder/internal/conf"
 	"SK-builder/internal/data"
+	"SK-builder/internal/infrastructure/db"
 	"SK-builder/internal/infrastructure/mykey"
 	"SK-builder/internal/infrastructure/myotel"
 	"SK-builder/internal/server"
 	"SK-builder/internal/service"
 	"context"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -22,11 +24,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(contextContext context.Context, confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewDB(confData, logger)
-	if err != nil {
-		return nil, nil, err
-	}
+func wireApp(contextContext context.Context, confServer *conf.Server, dataData *db.Data, logger log.Logger) (*kratos.App, error) {
 	greeterRepo := data.NewGreeterRepo(dataData, logger)
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
 	greeterService := service.NewGreeterService(greeterUsecase)
@@ -35,22 +33,10 @@ func wireApp(contextContext context.Context, confServer *conf.Server, confData *
 	receiverUsecase := biz.NewReceiverUsecase(receiverRepo, logger)
 	receiverService := service.NewReceiverService(receiverUsecase)
 
-	rsaBucketRepe := data.NewBucketRepo(dataData, logger)
-	privateKey := mykey.NewProviderKey()
-	publicKey := mykey.NewPublicKey()
-	rsaKey := mykey.NewRsaKey(confServer, privateKey, publicKey)
-	snowNode := mykey.NewSnowNode(confServer)
-	rsaBucket := mykey.NewRsaBucket(confServer, rsaKey, snowNode, rsaBucketRepe)
-	err2 := newBucket(contextContext, rsaBucket, logger)
-	if err2 != nil { 
-		return nil, nil, err2
-	}
 	grpcServer := server.NewGRPCServer(confServer, greeterService, receiverService, logger)
 	httpServer := server.NewHTTPServer(confServer, greeterService, receiverService, logger)
 	app := newApp(logger, grpcServer, httpServer)
-	return app, func() {
-		cleanup()
-	}, nil
+	return app, nil
 }
 
 func wireProvider(contextContext context.Context, confServer *conf.Server, logger log.Logger) (func(), error) {
@@ -65,13 +51,20 @@ func wireProvider(contextContext context.Context, confServer *conf.Server, logge
 	return v, nil
 }
 
-// func wireBucket(contextContext context.Context, confData *conf.Data, confServer *conf.Server, logger log.Logger) error {
-// 	bucket := mykey.NewBucket(confServer)
-// 	privateKey := mykey.NewProviderKey()
-// 	publicKey := mykey.NewPublicKey()
-// 	rsaKey := mykey.NewRsaKey(privateKey, publicKey, confServer)
-// 	node := mykey.NewSnowNode(confServer)
-// 	v := mykey.NewSnowflakeID(node)
-// 	error2 := NewBucket(contextContext, bucket, rsaKey, v)
-// 	return error2
-// }
+func wireBucket(contextContext context.Context, confData *conf.Data, confServer *conf.Server, logger log.Logger) (*db.Data,func(),error) {
+	dataData, cleanup, err := db.NewDB(confData, logger)
+	if err != nil {
+		return nil, nil, err
+	}
+	rsaBucketRepe := data.NewBucketRepo(dataData, logger)
+	privateKey := mykey.NewProviderKey()
+	publicKey := mykey.NewPublicKey()
+	rsaKey := mykey.NewRsaKey(confServer, privateKey, publicKey)
+	snowNode := mykey.NewSnowNode(confServer)
+	rsaBucket := mykey.NewRsaBucket(confServer, rsaKey, snowNode, rsaBucketRepe)
+	err2 := newBucket(contextContext, rsaBucket, logger)
+	if err2 != nil { 
+		return nil, nil, err2
+	}
+	return dataData, cleanup, nil
+}

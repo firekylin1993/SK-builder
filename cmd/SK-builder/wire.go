@@ -10,6 +10,7 @@ import (
 	"SK-builder/internal/conf"
 	"SK-builder/internal/data"
 	"SK-builder/internal/infrastructure"
+	"SK-builder/internal/infrastructure/db"
 	"SK-builder/internal/server"
 	"SK-builder/internal/service"
 	"context"
@@ -19,14 +20,30 @@ import (
 )
 
 // wireApp init kratos application.
-func wireApp(context.Context, *conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, infrastructure.ProviderSet, newBucket, newApp))
+func wireApp(context.Context, *conf.Server, *db.Data, log.Logger) (*kratos.App, error) {
+	panic(wire.Build(
+			server.ProviderSet,
+			data.ProviderSet,
+			biz.ProviderSet,
+			service.ProviderSet,
+			newApp,
+		),
+	)
 }
 
 func wireProvider(context.Context, *conf.Server, log.Logger) (func(), error) {
-	panic(wire.Build(infrastructure.ProviderSet, newProvider))
+	panic(wire.Build(
+			infrastructure.ProviderSet,
+			newProvider,
+		),
+	)
 }
 
-// func wireBucket(context.Context, *conf.Data, *conf.Server, log.Logger) error {
-// 	panic(wire.Build(data.ProviderSet, infrastructure.ProviderSet, NewBucket))
-// }
+func wireBucket(context.Context, *conf.Data, *conf.Server, log.Logger) (*db.Data, func(), error) {
+	panic(wire.Build(
+			data.ProviderSet,
+			infrastructure.ProviderSet,
+			newBucket,
+		),
+	)
+}

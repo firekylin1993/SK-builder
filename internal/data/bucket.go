@@ -1,17 +1,18 @@
 package data
 
 import (
+	"SK-builder/internal/infrastructure/db"
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 type RsaBucketRepo struct {
-	data *Data
+	data *db.Data
 	log  *log.Helper
 }
 
-func NewBucketRepo(data *Data, logger log.Logger) *RsaBucketRepo {
+func NewBucketRepo(data *db.Data, logger log.Logger) *RsaBucketRepo {
 	return &RsaBucketRepo{
 		data: data,
 		log:  log.NewHelper(logger),

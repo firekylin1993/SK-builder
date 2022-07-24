@@ -73,20 +73,20 @@ func main() {
 		panic(err)
 	}
 
-	// err := wireBucket(context.Background(), bc.Server, logger)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	db, cleanup, err := wireBucket(context.Background(), bc.Data, bc.Server, logger)
+	defer cleanup()
+	if err != nil {
+		panic(err)
+	}
 	providerCleanup, err := wireProvider(context.Background(), bc.Server, logger)
 	if err != nil {
 		panic(err)
 	}
 	defer providerCleanup()
-	app, cleanup, err := wireApp(context.Background(), bc.Server, bc.Data, logger)
+	app, err := wireApp(context.Background(), bc.Server, db, logger)
 	if err != nil {
 		panic(err)
 	}
-	defer cleanup()
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {

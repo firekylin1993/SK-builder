@@ -4,16 +4,18 @@ import (
 	"context"
 
 	"SK-builder/internal/biz"
+	"SK-builder/internal/infrastructure/db"
+
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 type greeterRepo struct {
-	data *Data
+	data *db.Data
 	log  *log.Helper
 }
 
 // NewGreeterRepo .
-func NewGreeterRepo(data *Data, logger log.Logger) biz.GreeterRepo {
+func NewGreeterRepo(data *db.Data, logger log.Logger) biz.GreeterRepo {
 	return &greeterRepo{
 		data: data,
 		log:  log.NewHelper(logger),

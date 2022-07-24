@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"SK-builder/internal/infrastructure/db"
 	"SK-builder/internal/infrastructure/mykey"
 	"SK-builder/internal/infrastructure/myotel"
 
@@ -8,6 +9,8 @@ import (
 )
 
 var ProviderSet = wire.NewSet(
+	db.NewDB,
+
 	myotel.NewTracerClient,
 	myotel.NewTracerExporter,
 	myotel.NewMetricClient,
