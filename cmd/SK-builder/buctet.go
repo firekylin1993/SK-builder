@@ -3,7 +3,9 @@ package main
 import (
 	"SK-builder/internal/infrastructure/mykey"
 	"context"
+	"errors"
 	"sync"
+	"sync/atomic"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -21,10 +23,12 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 	for i := 0; i < int(b.Limit); i++ {
 		c <- struct{}{}
 	}
+	var keys int32
 	wg := sync.WaitGroup{}
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
+			defer wg.Done()
 		Loop:
 			for {
 				select {
@@ -33,6 +37,7 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 					if err != nil {
 						log.NewHelper(logger).Errorf("密钥文件入库失败：%s，路径：%s", err.Error(), path)
 						b.Remove(ctx, path) // 删除密钥桶
+						break
 					}
 
 					err = b.BucketDb.Add(ctx, snowIDInt64) // 将密钥桶路径添加到数据库
@@ -40,8 +45,8 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 						log.NewHelper(logger).Errorf("密钥文件入库失败：%s，路径：%s", err.Error(), path)
 						b.Remove(ctx, path) // 删除密钥桶
 					}
+					atomic.AddInt32(&keys, 1)
 				default:
-					wg.Done()
 					break Loop
 				}
 			}
@@ -49,5 +54,9 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 	}
 	wg.Wait()
 	close(c)
+	if keys != b.Limit {
+		log.NewHelper(logger).Errorf("当前密钥桶密钥对数%d\n", keys)
+		return errors.New("密钥桶数量不一致")
+	}
 	return nil
 }
