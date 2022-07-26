@@ -8,7 +8,7 @@ server:
   otel:
     addr: ingress-huashan.avlyun.org:30164
     fraction: 1.0
-  app_name: "SK-Build"
+  app_name: "SK-Builder-demo"
   rsa_bucket:
     limit: 20
     path: "/home/go/src/SK-builder-demo/temp/rsa"
