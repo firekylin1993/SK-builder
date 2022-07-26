@@ -64,7 +64,7 @@ func newBucket(ctx context.Context, b *myrsa.RsaBucket, logger log.Logger) error
 	wg.Wait()
 	close(c)
 	if (keys + i) != b.Limit {
-		log.NewHelper(logger).Errorf("当前密钥桶密钥对数%d，需要对数%d\n", (keys + diff), b.Limit)
+		log.NewHelper(logger).Errorf("当前密钥桶密钥对数%d，需要对数%d\n", keys+diff, b.Limit)
 		return errors.New("密钥桶数量不一致")
 	}
 	return nil
