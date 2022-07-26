@@ -1,33 +1,44 @@
-package mykey
+package myrsa
 
 import (
-	"SK-builder/internal/conf"
-	"SK-builder/internal/data"
+	"SK-Builder/internal/conf"
+	"SK-Builder/internal/data/mysnowflake"
+	"SK-Builder/internal/db"
 	"context"
 	"crypto/rsa"
 	"errors"
+	"github.com/go-kratos/kratos/v2/log"
 	"os"
 	"path"
 	"strconv"
-	"sync"
 )
 
-var SnowIDMap *sync.Map
+type rsaBucketRepo struct {
+	data *db.Data
+	log  *log.Helper
+}
+
+func NewBucketRepo(data *db.Data, logger log.Logger) *rsaBucketRepo {
+	return &rsaBucketRepo{
+		data: data,
+		log:  log.NewHelper(logger),
+	}
+}
 
 type RsaBucket struct {
 	Path     string
 	Limit    int32
 	RsaKey   *RsaKey
-	BucketDb *data.RsaBucketRepo
-	SnowNode *SnowNode
+	Repo     *rsaBucketRepo
+	SnowNode *mysnowflake.SnowNode
 }
 
-func NewRsaBucket(c *conf.Server, r *RsaKey, sn *SnowNode, db *data.RsaBucketRepo) *RsaBucket {
+func NewRsaBucket(c *conf.Server, r *RsaKey, sn *mysnowflake.SnowNode, repo *rsaBucketRepo) *RsaBucket {
 	return &RsaBucket{
 		Path:     c.RsaBucket.Path,
 		Limit:    c.RsaBucket.Limit,
 		RsaKey:   r,
-		BucketDb: db,
+		Repo:     repo,
 		SnowNode: sn,
 	}
 }
@@ -59,4 +70,22 @@ func (b *RsaBucket) Fill(ctx context.Context, pk *rsa.PrivateKey) (string, int64
 
 func (b *RsaBucket) Remove(ctx context.Context, path string) error {
 	return os.RemoveAll(path) //删除桶密钥
+}
+
+func (b *rsaBucketRepo) Add(ctx context.Context, snowId int64) error {
+	// _, err := b.data.mysql.Exec("INSERT INTO bucket(id, bucket_path) VALUES(?, ?)", 1, path)
+	// if err != nil {
+	// 	b.log.Error("添加密钥桶路径失败", err)
+	// 	return err
+	// }
+	return nil
+}
+
+func (b *rsaBucketRepo) GetAll(ctx context.Context) (int32, error) {
+	// TODO 获取密钥桶所有数据
+	return 0, nil
+}
+
+func (b *rsaBucketRepo) Delete(ctx context.Context, snowId int64) error {
+	return nil
 }

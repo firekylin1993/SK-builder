@@ -1,12 +1,9 @@
 package main
 
 import (
+	"SK-Builder/internal/conf"
 	"context"
 	"flag"
-	"os"
-
-	"SK-builder/internal/conf"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -14,6 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"os"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -72,18 +70,25 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
+	//otel相关
+	otelCleanup, err := wireOtel(context.Background(), bc.Server, logger)
+	if err != nil {
+		panic(err)
+	}
+	defer otelCleanup()
 
-	db, cleanup, err := wireBucket(context.Background(), bc.Data, bc.Server, logger)
+	db, cleanup, err := wireDb(bc.Data, logger)
+	if err != nil {
+		panic(err)
+	}
 	defer cleanup()
+	//初始化密钥桶
+	err = wireBucket(context.Background(), bc.Server, db, logger)
 	if err != nil {
 		panic(err)
 	}
-	providerCleanup, err := wireProvider(context.Background(), bc.Server, logger)
-	if err != nil {
-		panic(err)
-	}
-	defer providerCleanup()
-	app, err := wireApp(context.Background(), bc.Server, db, logger)
+
+	app, err := wireApp(bc.Server, db, logger)
 	if err != nil {
 		panic(err)
 	}

@@ -3,60 +3,68 @@
 
 openapi: 3.0.3
 info:
-    title: ""
+    title: Edn API
     version: 0.0.1
 paths:
-    /channel/{channel}:
-        get:
+    /key/receive:
+        post:
             tags:
-                - Receiver
-            operationId: Receiver_Recrive
-            parameters:
-                - name: channel
-                  in: path
-                  required: true
-                  schema:
-                    type: string
+                - Edn
+            operationId: Edn_Receiver
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReceiverRequest'
+                required: true
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/edn.v1.ReceiveReply'
-    /helloworld/{name}:
-        get:
-            tags:
-                - Greeter
-            description: Sends a greeting
-            operationId: Greeter_SayHello
-            parameters:
-                - name: name
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
+                                $ref: '#/components/schemas/ReceiverReply'
+                default:
+                    description: Default error response
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
-        edn.v1.ReceiveReply:
+        GoogleProtobufAny:
             type: object
             properties:
-                message:
+                '@type':
                     type: string
-        helloworld.v1.HelloReply:
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        ReceiverReply:
             type: object
             properties:
+                data:
+                    type: string
+        ReceiverRequest:
+            type: object
+            properties:
+                channel:
+                    type: string
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
                 message:
                     type: string
-            description: The response message containing the greetings
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
 tags:
-    - name: Greeter
-      description: The greeting service definition.
-    - name: Receiver
+    - name: Edn

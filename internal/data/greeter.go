@@ -1,11 +1,10 @@
 package data
 
 import (
+	"SK-Builder/internal/db"
 	"context"
 
-	"SK-builder/internal/biz"
-	"SK-builder/internal/infrastructure/db"
-
+	"SK-Builder/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
 )
 

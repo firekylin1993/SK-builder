@@ -1,8 +1,8 @@
-package mykey
+package myrsa
 
 import (
-	"SK-builder/internal/conf"
-	"SK-builder/internal/infrastructure/kits"
+	"SK-Builder/internal/conf"
+	"SK-Builder/kits"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -55,10 +55,10 @@ func (r *RsaKey) GetKey(k *rsa.PrivateKey, path string) error {
 
 	keyPath := filepath.Join(path, "private.pem")
 	file, err := os.Create(keyPath)
-	defer file.Close()
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 	err = pem.Encode(file, block)
 	if err != nil {
 		return err
@@ -79,11 +79,10 @@ func (r *RsaKey) GetPublicKey(k *rsa.PrivateKey, sid [8]byte, path string) error
 	}
 	keyPath := filepath.Join(path, "public.pem")
 	file, err := os.Create(keyPath)
-	defer file.Close()
 	if err != nil {
 		return err
 	}
-
+	defer file.Close()
 	combine := kits.BytesCombine([]byte("A"), sid[:], derPkix)
 	crc32Byte := kits.IntToBytes(kits.GetCRC32Key(combine))
 

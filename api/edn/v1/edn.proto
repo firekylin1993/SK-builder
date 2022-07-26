@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+package api.edn.v1;
+
+option go_package = "SK-Builder/api/edn/v1;v1";
+
+service Edn {
+	rpc Receiver (ReceiverRequest) returns (ReceiverReply) {
+		option (google.api.http) = {
+			post: "/key/receive"
+			body: "*"
+		};
+	};
+}
+
+message ReceiverRequest {
+	string channel = 1;
+}
+message ReceiverReply {
+	string data = 1;
+}

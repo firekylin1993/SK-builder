@@ -1,16 +1,15 @@
 package main
 
 import (
-	"SK-builder/internal/infrastructure/mykey"
+	"SK-Builder/internal/data/myrsa"
 	"context"
-	"errors"
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/pkg/errors"
 	"sync"
 	"sync/atomic"
-
-	"github.com/go-kratos/kratos/v2/log"
 )
 
-func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error {
+func newBucket(ctx context.Context, b *myrsa.RsaBucket, logger log.Logger) error {
 	log.NewHelper(logger).Info("初始化密钥桶...")
 	defer log.NewHelper(logger).Info("初始化密钥桶完成")
 
@@ -19,13 +18,12 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 		return err
 	}
 
-	i, err := b.BucketDb.GetAll(ctx)
+	i, err := b.Repo.GetAll(ctx)
 	if err != nil {
 		return err
 	}
 
-	var diff int32 = 0
-	diff = b.Limit - i
+	diff := b.Limit - i
 	if diff <= 0 {
 		return nil
 	}
@@ -47,14 +45,14 @@ func newBucket(ctx context.Context, b *mykey.RsaBucket, logger log.Logger) error
 					path, snowIDInt64, err := b.Fill(ctx, pk) // 生成密钥文件,且放入密钥桶
 					if err != nil {
 						log.NewHelper(logger).Errorf("密钥文件入库失败：%s，路径：%s", err.Error(), path)
-						b.Remove(ctx, path) // 删除密钥桶
+						b.Remove(ctx, path) //nolint:errcheck    // 删除密钥桶
 						break
 					}
 
-					err = b.BucketDb.Add(ctx, snowIDInt64) // 将密钥桶路径添加到数据库
+					err = b.Repo.Add(ctx, snowIDInt64) // 将密钥桶路径添加到数据库
 					if err != nil {
 						log.NewHelper(logger).Errorf("密钥文件入库失败：%s，路径：%s", err.Error(), path)
-						b.Remove(ctx, path) // 删除密钥桶
+						b.Remove(ctx, path) //nolint:errcheck    // 删除密钥桶
 					}
 					atomic.AddInt32(&keys, 1)
 				default:

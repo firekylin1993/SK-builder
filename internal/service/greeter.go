@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	v1 "SK-builder/api/helloworld/v1"
-	"SK-builder/internal/biz"
+	v1 "SK-Builder/api/helloworld/v1"
+	"SK-Builder/internal/biz"
 )
 
 // GreeterService is a greeter service.

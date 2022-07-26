@@ -1,7 +1,7 @@
-package mykey
+package mysnowflake
 
 import (
-	"SK-builder/internal/conf"
+	"SK-Builder/internal/conf"
 
 	"github.com/bwmarrin/snowflake"
 )

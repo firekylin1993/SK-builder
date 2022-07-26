@@ -8,10 +8,10 @@ server:
   otel:
     addr: ingress-huashan.avlyun.org:30164
     fraction: 1.0
-  app_name: "SK-demo"
+  app_name: "SK-Build"
   rsa_bucket:
     limit: 20
-    path: "/Users/yuguo/go-project/src/SK-builder-demo/temp/rsa"
+    path: "/home/go/src/SK-Builder/temp/rsa"
     key_size: 2048
 data:
   mysql:

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"SK-builder/internal/conf"
+	"SK-Builder/internal/conf"
 	"context"
 	"time"
 
@@ -18,7 +18,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 )
 
-func newProvider(ctx context.Context, c *conf.Server, metricExp export.Exporter, traceExp *otlptrace.Exporter) (func(), error) {
+func newOtel(ctx context.Context, c *conf.Server, metricExp export.Exporter, traceExp *otlptrace.Exporter) (func(), error) {
 	res, err := resource.New(ctx,
 		resource.WithProcess(),
 		resource.WithTelemetrySDK(),

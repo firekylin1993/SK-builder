@@ -1,7 +1,7 @@
 package myotel
 
 import (
-	"SK-builder/internal/conf"
+	"SK-Builder/internal/conf"
 	"context"
 
 	"github.com/pkg/errors"

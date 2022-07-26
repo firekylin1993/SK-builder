@@ -1,12 +1,10 @@
 package server
 
 import (
-	ednv1 "SK-builder/api/edn/v1"
-	v1 "SK-builder/api/helloworld/v1"
-	"SK-builder/internal/conf"
-	"SK-builder/internal/infrastructure/p8s"
-	"SK-builder/internal/service"
-
+	v1 "SK-Builder/api/edn/v1"
+	"SK-Builder/internal/conf"
+	"SK-Builder/internal/data/p8s"
+	"SK-Builder/internal/service"
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -19,7 +17,11 @@ import (
 )
 
 // NewHTTPServer new a HTTP server.
-func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, receiver *service.ReceiverService, logger log.Logger) *http.Server {
+func NewHTTPServer(
+	c *conf.Server,
+	edn *service.EdnService,
+	logger log.Logger,
+) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -44,10 +46,10 @@ func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, receiver *se
 
 	srv.Handle("/metrics", promhttp.Handler())
 
-	openAPIhandler := openapiv2.NewHandler()
-	srv.HandlePrefix("/q/", openAPIhandler)
+	h := openapiv2.NewHandler()
+	// swagger
+	srv.HandlePrefix("/q/", h)
 
-	v1.RegisterGreeterHTTPServer(srv, greeter)
-	ednv1.RegisterReceiverHTTPServer(srv, receiver)
+	v1.RegisterEdnHTTPServer(srv, edn)
 	return srv
 }

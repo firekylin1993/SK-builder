@@ -12,11 +12,11 @@ func BytesCombine(pBytes ...[]byte) []byte {
 
 func IntToBytes(n uint32) []byte {
 	bytebuf := bytes.NewBuffer([]byte{})
-	binary.Write(bytebuf, binary.BigEndian, n)
+	binary.Write(bytebuf, binary.BigEndian, n) //nolint:errcheck
 	return bytebuf.Bytes()
 }
 
-// func BytesToInt(b []byte) int {
+// func BytesToInt(b []byte) int {bucket.go
 // 	bytesBuffer := bytes.NewBuffer(b)
 
 // 	var x int32

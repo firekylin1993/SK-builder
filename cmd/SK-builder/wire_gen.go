@@ -7,64 +7,62 @@
 package main
 
 import (
-	"SK-builder/internal/biz"
-	"SK-builder/internal/conf"
-	"SK-builder/internal/data"
-	"SK-builder/internal/infrastructure/db"
-	"SK-builder/internal/infrastructure/mykey"
-	"SK-builder/internal/infrastructure/myotel"
-	"SK-builder/internal/server"
-	"SK-builder/internal/service"
+	"SK-Builder/internal/biz"
+	"SK-Builder/internal/conf"
+	"SK-Builder/internal/data"
+	"SK-Builder/internal/data/myotel"
+	"SK-Builder/internal/data/myrsa"
+	"SK-Builder/internal/data/mysnowflake"
+	"SK-Builder/internal/db"
+	"SK-Builder/internal/server"
+	"SK-Builder/internal/service"
 	"context"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 // Injectors from wire.go:
 
-// wireApp init kratos application.
-func wireApp(contextContext context.Context, confServer *conf.Server, dataData *db.Data, logger log.Logger) (*kratos.App, error) {
-	greeterRepo := data.NewGreeterRepo(dataData, logger)
-	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	greeterService := service.NewGreeterService(greeterUsecase)
-	
-	receiverRepo := data.NewReceiverRepo(dataData, logger)
-	receiverUsecase := biz.NewReceiverUsecase(receiverRepo, logger)
-	receiverService := service.NewReceiverService(receiverUsecase)
+func wireDb(data *conf.Data, logger log.Logger) (*db.Data, func(), error) {
+	dbData, cleanup, err := db.NewMysql(data, logger)
+	if err != nil {
+		return nil, nil, err
+	}
+	return dbData, func() {
+		cleanup()
+	}, nil
+}
 
-	grpcServer := server.NewGRPCServer(confServer, greeterService, receiverService, logger)
-	httpServer := server.NewHTTPServer(confServer, greeterService, receiverService, logger)
+// wireApp init kratos application.
+func wireApp(confServer *conf.Server, dbData *db.Data, logger log.Logger) (*kratos.App, error) {
+	ednRepo := data.NewEdnRepo(dbData, logger)
+	ednUsecase := biz.NewEdnUsecase(ednRepo, logger)
+	ednService := service.NewEdnService(ednUsecase)
+	grpcServer := server.NewGRPCServer(confServer, ednService, logger)
+	httpServer := server.NewHTTPServer(confServer, ednService, logger)
 	app := newApp(logger, grpcServer, httpServer)
 	return app, nil
 }
 
-func wireProvider(contextContext context.Context, confServer *conf.Server, logger log.Logger) (func(), error) {
+func wireOtel(contextContext context.Context, confServer *conf.Server, logger log.Logger) (func(), error) {
 	client := myotel.NewMetricClient(confServer)
 	exporter := myotel.NewMetricExporter(contextContext, client)
 	otlptraceClient := myotel.NewTracerClient(confServer)
 	otlptraceExporter := myotel.NewTracerExporter(contextContext, otlptraceClient)
-	v, err := newProvider(contextContext, confServer, exporter, otlptraceExporter)
+	v, err := newOtel(contextContext, confServer, exporter, otlptraceExporter)
 	if err != nil {
 		return nil, err
 	}
 	return v, nil
 }
 
-func wireBucket(contextContext context.Context, confData *conf.Data, confServer *conf.Server, logger log.Logger) (*db.Data,func(),error) {
-	dataData, cleanup, err := db.NewMysql(confData, logger)
-	if err != nil {
-		return nil, nil, err
-	}
-	rsaBucketRepe := data.NewBucketRepo(dataData, logger)
-	privateKey := mykey.NewProviderKey()
-	publicKey := mykey.NewPublicKey()
-	rsaKey := mykey.NewRsaKey(confServer, privateKey, publicKey)
-	snowNode := mykey.NewSnowNode(confServer)
-	rsaBucket := mykey.NewRsaBucket(confServer, rsaKey, snowNode, rsaBucketRepe)
-	err2 := newBucket(contextContext, rsaBucket, logger)
-	if err2 != nil { 
-		return nil, nil, err2
-	}
-	return dataData, cleanup, nil
+func wireBucket(contextContext context.Context, confServer *conf.Server, dbData *db.Data, logger log.Logger) error {
+	privateKey := myrsa.NewProviderKey()
+	publicKey := myrsa.NewPublicKey()
+	rsaKey := myrsa.NewRsaKey(confServer, privateKey, publicKey)
+	snowNode := mysnowflake.NewSnowNode(confServer)
+	rsaBucketRepo := myrsa.NewBucketRepo(dbData, logger)
+	rsaBucket := myrsa.NewRsaBucket(confServer, rsaKey, snowNode, rsaBucketRepo)
+	error2 := newBucket(contextContext, rsaBucket, logger)
+	return error2
 }

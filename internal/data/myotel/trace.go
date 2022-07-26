@@ -1,10 +1,9 @@
 package myotel
 
 import (
-	"SK-builder/internal/conf"
+	"SK-Builder/internal/conf"
 	"context"
 	"errors"
-
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"google.golang.org/grpc"
