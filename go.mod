@@ -1,4 +1,4 @@
-module SK-Builder
+module SK-builder-demo
 
 go 1.17
 

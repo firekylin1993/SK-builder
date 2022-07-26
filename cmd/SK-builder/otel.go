@@ -1,12 +1,12 @@
 package main
 
 import (
-	"SK-Builder/internal/conf"
+	"SK-builder-demo/internal/conf"
 	"context"
-	"time"
-
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"time"
+
 	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/propagation"
 	controller "go.opentelemetry.io/otel/sdk/metric/controller/basic"

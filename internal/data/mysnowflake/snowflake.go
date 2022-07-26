@@ -1,8 +1,7 @@
 package mysnowflake
 
 import (
-	"SK-Builder/internal/conf"
-
+	"SK-builder-demo/internal/conf"
 	"github.com/bwmarrin/snowflake"
 )
 

@@ -1,8 +1,8 @@
 package service
 
 import (
-	pb "SK-Builder/api/edn/v1"
-	"SK-Builder/internal/biz"
+	pb "SK-builder-demo/api/edn/v1"
+	"SK-builder-demo/internal/biz"
 	"context"
 	"go.opentelemetry.io/otel"
 )
@@ -18,7 +18,7 @@ func NewEdnService(uc *biz.EdnUsecase) *EdnService {
 }
 
 func (s *EdnService) Receiver(ctx context.Context, req *pb.ReceiverRequest) (*pb.ReceiverReply, error) {
-	c, span := otel.Tracer("SK-builder.Receiver").Start(ctx, "Receiver")
+	c, span := otel.Tracer("SK-builder-demo.Receiver").Start(ctx, "Receiver")
 	defer span.End()
 	receiver, err := s.uc.KeyReceive(c, &biz.Edn{
 		Channel: req.Channel,

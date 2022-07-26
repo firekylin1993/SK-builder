@@ -6,16 +6,14 @@
 package main
 
 import (
-	"SK-Builder/internal/biz"
-	"SK-Builder/internal/conf"
-	"SK-Builder/internal/data"
-	"SK-Builder/internal/db"
-	"SK-Builder/internal/server"
-	"SK-Builder/internal/service"
+	"SK-builder-demo/internal/biz"
+	"SK-builder-demo/internal/conf"
+	"SK-builder-demo/internal/data"
+	"SK-builder-demo/internal/db"
+	"SK-builder-demo/internal/server"
+	"SK-builder-demo/internal/service"
 	"context"
-	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/wire"
 )
 
 func wireDb(*conf.Data, log.Logger) (*db.Data, func(), error) {

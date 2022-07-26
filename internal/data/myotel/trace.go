@@ -1,7 +1,7 @@
 package myotel
 
 import (
-	"SK-Builder/internal/conf"
+	"SK-builder-demo/internal/conf"
 	"context"
 	"errors"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"

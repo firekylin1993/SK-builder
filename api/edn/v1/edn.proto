@@ -4,7 +4,7 @@ import "google/api/annotations.proto";
 
 package api.edn.v1;
 
-option go_package = "SK-Builder/api/edn/v1;v1";
+option go_package = "SK-builder-demo/api/edn/v1;v1";
 
 service Edn {
 	rpc Receiver (ReceiverRequest) returns (ReceiverReply) {

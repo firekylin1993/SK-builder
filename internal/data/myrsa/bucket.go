@@ -1,9 +1,9 @@
 package myrsa
 
 import (
-	"SK-Builder/internal/conf"
-	"SK-Builder/internal/data/mysnowflake"
-	"SK-Builder/internal/db"
+	"SK-builder-demo/internal/conf"
+	"SK-builder-demo/internal/data/mysnowflake"
+	"SK-builder-demo/internal/db"
 	"context"
 	"crypto/rsa"
 	"errors"

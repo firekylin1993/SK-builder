@@ -1,7 +1,7 @@
 package main
 
 import (
-	"SK-Builder/internal/conf"
+	"SK-builder-demo/internal/conf"
 	"context"
 	"flag"
 	"github.com/go-kratos/kratos/v2"

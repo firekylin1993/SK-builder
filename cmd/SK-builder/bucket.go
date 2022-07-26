@@ -1,7 +1,7 @@
 package main
 
 import (
-	"SK-Builder/internal/data/myrsa"
+	"SK-builder-demo/internal/data/myrsa"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"

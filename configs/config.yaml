@@ -11,7 +11,7 @@ server:
   app_name: "SK-Build"
   rsa_bucket:
     limit: 20
-    path: "/home/go/src/SK-Builder/temp/rsa"
+    path: "/home/go/src/SK-builder-demo/temp/rsa"
     key_size: 2048
 data:
   mysql:

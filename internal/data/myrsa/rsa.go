@@ -1,8 +1,8 @@
 package myrsa
 
 import (
-	"SK-Builder/internal/conf"
-	"SK-Builder/kits"
+	"SK-builder-demo/internal/conf"
+	"SK-builder-demo/kits"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"SK-Builder/internal/conf"
+	"SK-builder-demo/internal/conf"
 	"github.com/go-kratos/kratos/v2/log"
 )
 

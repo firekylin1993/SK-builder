@@ -1,9 +1,9 @@
 package server
 
 import (
-	v1 "SK-Builder/api/edn/v1"
-	"SK-Builder/internal/conf"
-	"SK-Builder/internal/service"
+	v1 "SK-builder-demo/api/edn/v1"
+	"SK-builder-demo/internal/conf"
+	"SK-builder-demo/internal/service"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"

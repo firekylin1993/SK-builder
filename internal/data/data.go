@@ -1,9 +1,9 @@
 package data
 
 import (
-	"SK-Builder/internal/data/myotel"
-	"SK-Builder/internal/data/myrsa"
-	"SK-Builder/internal/data/mysnowflake"
+	"SK-builder-demo/internal/data/myotel"
+	"SK-builder-demo/internal/data/myrsa"
+	"SK-builder-demo/internal/data/mysnowflake"
 	"github.com/google/wire"
 )
 

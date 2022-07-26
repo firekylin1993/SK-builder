@@ -1,14 +1,14 @@
 package myotel
 
 import (
-	"SK-Builder/internal/conf"
+	"SK-builder-demo/internal/conf"
 	"context"
-
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
-	"go.opentelemetry.io/otel/sdk/metric/export"
 	"google.golang.org/grpc"
+
+	"go.opentelemetry.io/otel/sdk/metric/export"
 )
 
 func NewMetricClient(c *conf.Server) otlpmetric.Client {
