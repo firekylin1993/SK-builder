@@ -4,6 +4,8 @@ import (
 	"SK-builder-demo/internal/conf"
 	"context"
 	"errors"
+	"time"
+
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"google.golang.org/grpc"
@@ -24,7 +26,9 @@ func NewTracerExporter(ctx context.Context, client otlptrace.Client) *otlptrace.
 	if client == nil {
 		return nil
 	}
-	traceExp, err := otlptrace.New(ctx, client)
+	c, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	traceExp, err := otlptrace.New(c, client)
 	if err != nil {
 		panic(errors.New("failed to create trace exporter"))
 	}
