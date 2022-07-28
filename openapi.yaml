@@ -50,6 +50,17 @@ components:
             properties:
                 channel:
                     type: string
+                phone:
+                    type: string
+                email:
+                    type: string
+                info:
+                    $ref: '#/components/schemas/ReceiverRequest_Info'
+        ReceiverRequest_Info:
+            type: object
+            properties:
+                address:
+                    type: string
         Status:
             type: object
             properties:

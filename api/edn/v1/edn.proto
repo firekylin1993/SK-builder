@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "validate/validate.proto";
 
 package api.edn.v1;
 
@@ -16,7 +17,13 @@ service Edn {
 }
 
 message ReceiverRequest {
-	string channel = 1;
+	message Info {
+    	string address = 1;
+	}
+	string channel = 1 [(validate.rules).string.const = "foo"];
+	string phone = 2 [(validate.rules).string.len = 11];
+	string email = 3 [(validate.rules).string.email = true];
+	Info info = 4 [(validate.rules).message.required = true];
 }
 message ReceiverReply {
 	string data = 1;
