@@ -9,6 +9,7 @@ import (
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/metrics"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
@@ -32,6 +33,7 @@ func NewHTTPServer(
 				metrics.WithSeconds(prom.NewHistogram(p8s.MetricSeconds)),
 				metrics.WithRequests(prom.NewCounter(p8s.MetricRequests)),
 			),
+			metadata.Server(),
 			validate.Validator(),
 			logging.Server(logger),
 		),
