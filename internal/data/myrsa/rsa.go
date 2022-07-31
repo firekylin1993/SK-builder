@@ -2,7 +2,7 @@ package myrsa
 
 import (
 	"SK-builder-demo/internal/conf"
-	"SK-builder-demo/kits"
+	"SK-builder-demo/internal/kits"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
