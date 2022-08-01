@@ -11,6 +11,7 @@ func NewGoPool(size int) *goPool {
 	if size <= 0 {
 		size = 1
 	}
+
 	return &goPool{
 		queue: make(chan int, size),
 		wg:    &sync.WaitGroup{},
