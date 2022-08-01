@@ -6,16 +6,16 @@ server:
     addr: 0.0.0.0:9000
     timeout: 1s
   otel:
-    addr: ingress-huashan.avlyun.org:30164
+    addr: ingress-xx.xx.org:30164
     fraction: 1.0
   app_name: "SK-Builder-demo"
   rsa_bucket:
     limit: 20
-    path: "/Users/yuguo/go-project/src/SK-builder-demo/temp/rsa"
+    path: "/Users/XX/go-project/src/SK-builder-demo/temp/rsa"
     key_size: 2048
 data:
   mysql:
-    dsn: root:antiy@2018@10.251.21.20:31963/test
+    dsn: root:123456@2018@127.0.0.1:3306/test
   redis:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
