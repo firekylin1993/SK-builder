@@ -17,7 +17,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string
+	name string
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
@@ -28,6 +28,7 @@ var (
 
 func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+	flag.StringVar(&name, "name", "", "服务名")
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
@@ -50,7 +51,7 @@ func main() {
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
 		"service.id", id,
-		"service.name", Name,
+		"service.name", name,
 		"service.version", Version,
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
